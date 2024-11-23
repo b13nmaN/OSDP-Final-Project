@@ -3,8 +3,11 @@ let currentTime = 0;
 let isRunning = false;
 let animationInterval;
 let processQueue = [];
+let blockedQueue = [];
 let activeProcess = null;
 let completedProcesses = new Set();
+let requestDelay = Math.floor(Math.random() * 3000) + 1000; // Random delay between 1-4 seconds
+let processesRequestingResource = new Set();
 
 class Process {
     constructor(id) {
@@ -14,12 +17,16 @@ class Process {
         this.state = 'waiting';
         this.hasRequestedResource = false;
         this.hasResource = false;
+        this.isBlocked = false;
     }
 
     sendRequest() {
-        if (!this.hasRequestedResource && !this.hasResource) {
+        if (!this.hasRequestedResource && !this.hasResource && !this.isBlocked) {
             this.hasRequestedResource = true;
-            createRequestBall(this.id);
+            // Add random delay before creating request ball
+            setTimeout(() => {
+                createRequestBall(this.id);
+            }, Math.random() * requestDelay);
         }
     }
 }
@@ -118,10 +125,20 @@ function handleRequestArrival(processId) {
     }
 
     const process = processQueue.find(p => p.id === processId);
-    if (process && !activeProcess) {
-        createGrantBall(processId);
-    } else if (process) {
-        process.state = 'waiting';
+    if (process) {
+        if (!activeProcess) {
+            createGrantBall(processId);
+        } else {
+            // Block the process and add to blocked queue
+            process.state = 'blocked';
+            process.isBlocked = true;
+            blockedQueue.push(process);
+            
+            // Update process visualization to show blocked state
+            const processDiv = document.getElementById(process.id);
+            processDiv.style.backgroundColor = '#ff9999';
+            processDiv.innerHTML = `${process.id} (blocked)`;
+        }
         updateProcessInfo();
     }
 }
@@ -135,13 +152,6 @@ function startVisualization() {
     isRunning = true;
     document.querySelector('button[onclick="startVisualization()"]').disabled = true;
     document.getElementById('pauseButton').disabled = false;
-    
-    if (!activeProcess) {
-        const firstProcess = processQueue.find(p => p.state === 'waiting');
-        if (firstProcess) {
-            firstProcess.sendRequest();
-        }
-    }
     
     animationInterval = setInterval(() => {
         if (isRunning) {
@@ -164,11 +174,30 @@ function updateTimer() {
 }
 
 function updateProcessStates() {
-    processQueue.forEach(process => {
-        if (process.state === 'waiting' && !process.hasRequestedResource) {
-            process.sendRequest();
+    if (!activeProcess) {
+        // Randomly select 2-3 processes to send requests simultaneously
+        const availableProcesses = processQueue.filter(p => 
+            p.state === 'waiting' && 
+            !p.hasRequestedResource && 
+            !p.isBlocked && 
+            !completedProcesses.has(p.id)
+        );
+
+        if (availableProcesses.length > 0) {
+            const numProcessesToRequest = Math.min(
+                Math.floor(Math.random() * 2) + 2, // Random 2-3 processes
+                availableProcesses.length
+            );
+
+            // Randomly select processes
+            for (let i = 0; i < numProcessesToRequest; i++) {
+                const randomIndex = Math.floor(Math.random() * availableProcesses.length);
+                const selectedProcess = availableProcesses.splice(randomIndex, 1)[0];
+                processesRequestingResource.add(selectedProcess.id);
+                selectedProcess.sendRequest();
+            }
         }
-    });
+    }
 
     if (activeProcess) {
         activeProcess.remainingTime--;
@@ -208,9 +237,11 @@ function startProcessExecution(processId) {
         process.state = 'running';
         process.hasResource = true;
         process.hasRequestedResource = false;
+        process.isBlocked = false;
         
         const processDiv = document.getElementById(process.id);
         processDiv.style.backgroundColor = '#90EE90';
+        processDiv.innerHTML = `${process.id} (using resource)`;
         
         updateProcessInfo();
         drawLines();
@@ -220,18 +251,37 @@ function startProcessExecution(processId) {
 function completeProcess(process) {
     process.state = 'completed';
     process.hasResource = false;
+    process.isBlocked = false;
     completedProcesses.add(process.id);
     
     const processDiv = document.getElementById(process.id);
     processDiv.style.backgroundColor = '#ddd';
+    processDiv.innerHTML = process.id;
     
     activeProcess = null;
+    
+    // Remove process from blocked queue if present
+    const index = blockedQueue.findIndex(p => p.id === process.id);
+    if (index !== -1) {
+        blockedQueue.splice(index, 1);
+    }
 }
 
 function startNextProcess() {
-    const waitingProcess = processQueue.find(p => p.state === 'waiting' && p.hasRequestedResource);
-    if (waitingProcess) {
-        createGrantBall(waitingProcess.id);
+    if (blockedQueue.length > 0) {
+        // Get the first process from blocked queue
+        const nextProcess = blockedQueue.shift();
+        nextProcess.isBlocked = false;
+        createGrantBall(nextProcess.id);
+    } else {
+        const waitingProcess = processQueue.find(p => 
+            p.state === 'waiting' && 
+            p.hasRequestedResource && 
+            !p.isBlocked
+        );
+        if (waitingProcess) {
+            createGrantBall(waitingProcess.id);
+        }
     }
 }
 
@@ -313,7 +363,10 @@ function endVisualization() {
         process.state = 'waiting';
         process.hasRequestedResource = false;
         process.hasResource = false;
+        process.isBlocked = false;
     });
+    blockedQueue = [];
+    processesRequestingResource.clear();
     updateTimer();
     updateProcessInfo();
 }
