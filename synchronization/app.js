@@ -6,7 +6,7 @@ let processQueue = [];
 let blockedQueue = [];
 let activeProcess = null;
 let completedProcesses = new Set();
-let requestDelay = Math.floor(Math.random() * 3000) + 1000; // Random delay between 1-4 seconds
+let requestDelay = Math.floor(Math.random() * 3000) + 1000;
 let processesRequestingResource = new Set();
 
 class Process {
@@ -23,7 +23,6 @@ class Process {
     sendRequest() {
         if (!this.hasRequestedResource && !this.hasResource && !this.isBlocked) {
             this.hasRequestedResource = true;
-            // Add random delay before creating request ball
             setTimeout(() => {
                 createRequestBall(this.id);
             }, Math.random() * requestDelay);
@@ -129,12 +128,12 @@ function handleRequestArrival(processId) {
         if (!activeProcess) {
             createGrantBall(processId);
         } else {
-            // Block the process and add to blocked queue
             process.state = 'blocked';
             process.isBlocked = true;
-            blockedQueue.push(process);
+            if (!blockedQueue.includes(process)) {
+                blockedQueue.push(process);
+            }
             
-            // Update process visualization to show blocked state
             const processDiv = document.getElementById(process.id);
             processDiv.style.backgroundColor = '#ff9999';
             processDiv.innerHTML = `${process.id} (blocked)`;
@@ -142,7 +141,6 @@ function handleRequestArrival(processId) {
         updateProcessInfo();
     }
 }
-
 function startVisualization() {
     if (processQueue.length === 0) {
         alert('Add some processes first!');
@@ -175,7 +173,6 @@ function updateTimer() {
 
 function updateProcessStates() {
     if (!activeProcess) {
-        // Randomly select 2-3 processes to send requests simultaneously
         const availableProcesses = processQueue.filter(p => 
             p.state === 'waiting' && 
             !p.hasRequestedResource && 
@@ -185,11 +182,10 @@ function updateProcessStates() {
 
         if (availableProcesses.length > 0) {
             const numProcessesToRequest = Math.min(
-                Math.floor(Math.random() * 2) + 2, // Random 2-3 processes
+                Math.floor(Math.random() * 2) + 2,
                 availableProcesses.length
             );
 
-            // Randomly select processes
             for (let i = 0; i < numProcessesToRequest; i++) {
                 const randomIndex = Math.floor(Math.random() * availableProcesses.length);
                 const selectedProcess = availableProcesses.splice(randomIndex, 1)[0];
@@ -216,6 +212,57 @@ function updateProcessStates() {
     }
 }
 
+function startProcessExecution(processId) {
+    if (activeProcess) {
+        const process = processQueue.find(p => p.id === processId);
+        if (process) {
+            process.state = 'blocked';
+            process.isBlocked = true;
+            if (!blockedQueue.includes(process)) {
+                blockedQueue.push(process);
+            }
+            const processDiv = document.getElementById(process.id);
+            processDiv.style.backgroundColor = '#ff9999';
+            processDiv.innerHTML = `${process.id} (blocked)`;
+        }
+        return;
+    }
+
+    const process = processQueue.find(p => p.id === processId);
+    if (process) {
+        activeProcess = process;
+        process.state = 'running';
+        process.hasResource = true;
+        process.hasRequestedResource = false;
+        process.isBlocked = false;
+        
+        const blockIndex = blockedQueue.findIndex(p => p.id === process.id);
+        if (blockIndex !== -1) {
+            blockedQueue.splice(blockIndex, 1);
+        }
+        
+        const processDiv = document.getElementById(process.id);
+        processDiv.style.backgroundColor = '#90EE90';
+        processDiv.innerHTML = `${process.id} (using resource)`;
+        
+        processQueue.forEach(p => {
+            if (p.id !== process.id && p.hasRequestedResource) {
+                p.state = 'blocked';
+                p.isBlocked = true;
+                if (!blockedQueue.includes(p)) {
+                    blockedQueue.push(p);
+                }
+                const pDiv = document.getElementById(p.id);
+                pDiv.style.backgroundColor = '#ff9999';
+                pDiv.innerHTML = `${p.id} (blocked)`;
+            }
+        });
+        
+        updateProcessInfo();
+        drawLines();
+    }
+}
+
 function updateProcessInfo() {
     const info = document.getElementById('processInfo');
     let html = '<h3>Process Information:</h3>';
@@ -230,24 +277,6 @@ function updateProcessInfo() {
     info.innerHTML = html;
 }
 
-function startProcessExecution(processId) {
-    const process = processQueue.find(p => p.id === processId);
-    if (process) {
-        activeProcess = process;
-        process.state = 'running';
-        process.hasResource = true;
-        process.hasRequestedResource = false;
-        process.isBlocked = false;
-        
-        const processDiv = document.getElementById(process.id);
-        processDiv.style.backgroundColor = '#90EE90';
-        processDiv.innerHTML = `${process.id} (using resource)`;
-        
-        updateProcessInfo();
-        drawLines();
-    }
-}
-
 function completeProcess(process) {
     process.state = 'completed';
     process.hasResource = false;
@@ -260,7 +289,6 @@ function completeProcess(process) {
     
     activeProcess = null;
     
-    // Remove process from blocked queue if present
     const index = blockedQueue.findIndex(p => p.id === process.id);
     if (index !== -1) {
         blockedQueue.splice(index, 1);
@@ -268,19 +296,20 @@ function completeProcess(process) {
 }
 
 function startNextProcess() {
-    if (blockedQueue.length > 0) {
-        // Get the first process from blocked queue
-        const nextProcess = blockedQueue.shift();
-        nextProcess.isBlocked = false;
-        createGrantBall(nextProcess.id);
-    } else {
-        const waitingProcess = processQueue.find(p => 
-            p.state === 'waiting' && 
-            p.hasRequestedResource && 
-            !p.isBlocked
-        );
-        if (waitingProcess) {
-            createGrantBall(waitingProcess.id);
+    if (!activeProcess) {
+        if (blockedQueue.length > 0) {
+            const nextProcess = blockedQueue.shift();
+            nextProcess.isBlocked = false;
+            createGrantBall(nextProcess.id);
+        } else {
+            const waitingProcess = processQueue.find(p => 
+                p.state === 'waiting' && 
+                p.hasRequestedResource && 
+                !p.isBlocked
+            );
+            if (waitingProcess) {
+                createGrantBall(waitingProcess.id);
+            }
         }
     }
 }
@@ -371,7 +400,6 @@ function endVisualization() {
     updateProcessInfo();
 }
 
-// Initialize on load
 window.onload = () => {
     updateTimer();
     document.getElementById('processInfo').innerHTML = 
