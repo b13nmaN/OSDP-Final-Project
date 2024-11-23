@@ -132,6 +132,7 @@ function handleRequestArrival(processId) {
             process.isBlocked = true;
             if (!blockedQueue.includes(process)) {
                 blockedQueue.push(process);
+                updateBlockedQueueDisplay(); // Add this line
             }
             
             const processDiv = document.getElementById(process.id);
@@ -171,6 +172,7 @@ function updateTimer() {
     document.getElementById('timer').textContent = `Time: ${currentTime}s`;
 }
 
+// 
 function updateProcessStates() {
     if (!activeProcess) {
         const availableProcesses = processQueue.filter(p => 
@@ -220,6 +222,7 @@ function startProcessExecution(processId) {
             process.isBlocked = true;
             if (!blockedQueue.includes(process)) {
                 blockedQueue.push(process);
+                updateBlockedQueueDisplay(); // Add this line
             }
             const processDiv = document.getElementById(process.id);
             processDiv.style.backgroundColor = '#ff9999';
@@ -239,6 +242,7 @@ function startProcessExecution(processId) {
         const blockIndex = blockedQueue.findIndex(p => p.id === process.id);
         if (blockIndex !== -1) {
             blockedQueue.splice(blockIndex, 1);
+            updateBlockedQueueDisplay(); // Add this line
         }
         
         const processDiv = document.getElementById(process.id);
@@ -258,6 +262,7 @@ function startProcessExecution(processId) {
             }
         });
         
+        updateBlockedQueueDisplay(); // Add this line
         updateProcessInfo();
         drawLines();
     }
@@ -277,6 +282,23 @@ function updateProcessInfo() {
     info.innerHTML = html;
 }
 
+function updateBlockedQueueDisplay() {
+    const queueContainer = document.querySelector('.queue-container');
+    queueContainer.innerHTML = '';
+    
+    if (blockedQueue.length === 0) {
+        queueContainer.innerHTML = '<div style="color: #666; padding: 5px;">Empty</div>';
+        return;
+    }
+
+    blockedQueue.forEach((process, index) => {
+        const processElement = document.createElement('div');
+        processElement.className = 'blocked-process';
+        processElement.innerHTML = `${process.id} (${process.remainingTime}s)`;
+        queueContainer.appendChild(processElement);
+    });
+}
+
 function completeProcess(process) {
     process.state = 'completed';
     process.hasResource = false;
@@ -292,6 +314,7 @@ function completeProcess(process) {
     const index = blockedQueue.findIndex(p => p.id === process.id);
     if (index !== -1) {
         blockedQueue.splice(index, 1);
+        updateBlockedQueueDisplay(); // Add this line
     }
 }
 
@@ -395,15 +418,18 @@ function endVisualization() {
         process.isBlocked = false;
     });
     blockedQueue = [];
+    updateBlockedQueueDisplay(); // Add this line
     processesRequestingResource.clear();
     updateTimer();
     updateProcessInfo();
 }
 
+// Add this to your window.onload function
 window.onload = () => {
     updateTimer();
     document.getElementById('processInfo').innerHTML = 
         '<h3>Process Information:</h3><p>No processes added yet</p>';
+    updateBlockedQueueDisplay(); // Add this line
 };
 
 window.onresize = updateProcessPositions;

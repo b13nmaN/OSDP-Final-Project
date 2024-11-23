@@ -89,3 +89,42 @@ button {
     border-radius: 5px;
     max-width: 200px;
 }
+
+#blockedQueueDisplay {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.queue-container {
+    display: flex;
+    gap: 10px;
+    min-height: 40px;
+    min-width: 200px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.blocked-process {
+    background-color: #ff9999;
+    padding: 5px 10px;
+    border-radius: 3px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
