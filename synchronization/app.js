@@ -1,30 +1,96 @@
-// Add at the top with other global variables
-let semaphore = 1; // Binary semaphore with initial value 1
-let readyQueue = []; // Ready queue for processes waiting to be executed
 let processCount = 0;
 let currentTime = 0;
 let isRunning = false;
 let animationInterval;
 let processQueue = [];
-let blockedQueue = [];
 let activeProcess = null;
 let completedProcesses = new Set();
 let requestDelay = Math.floor(Math.random() * 3000) + 1000;
 let processesRequestingResource = new Set();
+
+class Semaphore {
+    constructor() {
+        this.value = 1;
+        this.q = []; // blocked queue
+        this.readyQ = []; // ready queue
+    }
+
+    reset() {
+        this.value = 1;
+        this.q = []; // blocked queue
+        this.readyQ = []; // ready queue
+    }
+
+    addToReady(process) {
+        if (!this.readyQ.includes(process)) {
+            this.readyQ.push(process);
+            process.inReadyQueue = true;
+            process.state = 'ready';
+            updateReadyQueueDisplay();
+        }
+    }
+
+    removeFromReady(process) {
+        const index = this.readyQ.findIndex(p => p.id === process.id);
+        if (index !== -1) {
+            this.readyQ.splice(index, 1);
+            process.inReadyQueue = false;
+            updateReadyQueueDisplay();
+        }
+    }
+
+    P(process) {
+        if (this.value === 1) {
+            this.value = 0;
+            this.removeFromReady(process);
+            return true;
+        } else {
+            this.removeFromReady(process);
+            this.q.push(process);
+            process.isBlocked = true;
+            process.state = 'blocked';
+            console.log(`Process ${process.id} is blocked`);
+            updateBlockedQueueDisplay();
+            return false;
+        }
+    }
+
+    V() {
+        if (this.q.length === 0) {
+            this.value = 1;
+        } else {
+            let p = this.q.shift();
+            p.isBlocked = false;
+            this.addToReady(p); // this method adds the process to the ready queue
+            console.log(`Process ${p.id} is unblocked`);
+            createGrantBall(p.id);
+        }
+        updateBlockedQueueDisplay();
+    }
+
+    getReadyProcesses() {
+        return this.readyQ;
+    }
+
+    getBlockedProcesses() {
+        return this.q;
+    }
+}
+
+let semaphore = new Semaphore();
 
 class Process {
     constructor(id) {
         this.id = id;
         this.executionTime = Math.floor(Math.random() * 5) + 1;
         this.remainingTime = this.executionTime;
-        this.state = 'ready'; // Changed from 'waiting' to 'ready'
+        this.state = 'ready';
         this.hasRequestedResource = false;
         this.hasResource = false;
         this.isBlocked = false;
-        this.inReadyQueue = true; // New property to track if process is in ready queue
+        this.inReadyQueue = true;
     }
 
-    // Add this method
     sendRequest() {
         if (!this.hasRequestedResource && !this.hasResource && !this.isBlocked) {
             this.hasRequestedResource = true;
@@ -34,36 +100,6 @@ class Process {
             }, Math.random() * requestDelay);
         }
     }
-
-    // Implement wait() operation for the semaphore
-    wait() {
-        if (semaphore > 0) {
-            semaphore--;
-            return true; // Process can enter critical section
-        } else {
-            return false; // Process must be blocked
-        }
-    }
-
-    // Implement signal() operation for the semaphore
-    signal() {
-        semaphore++;
-        return true;
-    }
-}
-
-function removeFromReadyQueue(process) {
-    const index = readyQueue.findIndex(p => p.id === process.id);
-    if (index !== -1) {
-        readyQueue.splice(index, 1);
-    }
-}
-
-function removeFromBlockedQueue(process) {
-    const index = blockedQueue.findIndex(p => p.id === process.id);
-    if (index !== -1) {
-        blockedQueue.splice(index, 1);
-    }
 }
 
 function updateReadyQueueDisplay() {
@@ -72,12 +108,13 @@ function updateReadyQueueDisplay() {
     
     readyQueueContainer.innerHTML = '<h3>Ready Queue:</h3>';
     
-    if (readyQueue.length === 0) {
+    const readyProcesses = semaphore.getReadyProcesses();
+    if (readyProcesses.length === 0) {
         readyQueueContainer.innerHTML += '<div style="color: #666; padding: 5px;">Empty</div>';
         return;
     }
 
-    readyQueue.forEach((process) => {
+    readyProcesses.forEach((process) => {
         const processElement = document.createElement('div');
         processElement.className = 'ready-process';
         processElement.innerHTML = `${process.id} (${process.remainingTime}s)`;
@@ -98,24 +135,10 @@ function addProcess() {
         
         container.appendChild(processDiv);
         processQueue.push(process);
-        readyQueue.push(process); // Add to ready queue
+        semaphore.addToReady(process);
         
         updateProcessPositions();
         updateProcessInfo();
-        updateReadyQueueDisplay(); // New function to add
-    }
-}
-
-function removeProcess() {
-    if (!isRunning && processCount > 0) {
-        const lastProcess = document.getElementById(`P${processCount}`);
-        if (lastProcess) {
-            lastProcess.remove();
-            processQueue.pop();
-            processCount--;
-            updateProcessPositions();
-            updateProcessInfo();
-        }
     }
 }
 
@@ -182,18 +205,9 @@ function handleRequestArrival(processId) {
 
     const process = processQueue.find(p => p.id === processId);
     if (process) {
-        if (process.wait()) { // Try to acquire semaphore
+        if (semaphore.P(process)) {
             createGrantBall(processId);
         } else {
-            process.state = 'blocked';
-            process.isBlocked = true;
-            process.inReadyQueue = false;
-            removeFromReadyQueue(process);
-            if (!blockedQueue.includes(process)) {
-                blockedQueue.push(process);
-                updateBlockedQueueDisplay();
-            }
-            
             const processDiv = document.getElementById(process.id);
             processDiv.style.backgroundColor = '#ff9999';
             processDiv.innerHTML = `${process.id} (blocked)`;
@@ -202,6 +216,7 @@ function handleRequestArrival(processId) {
         updateReadyQueueDisplay();
     }
 }
+
 function startVisualization() {
     if (processQueue.length === 0) {
         alert('Add some processes first!');
@@ -232,17 +247,16 @@ function updateTimer() {
     document.getElementById('timer').textContent = `Time: ${currentTime}s`;
 }
 
-// 
 function updateProcessStates() {
     if (!activeProcess) {
-        const availableProcesses = readyQueue.filter(p => 
+        const readyProcesses = semaphore.getReadyProcesses();
+        const availableProcesses = readyProcesses.filter(p => 
             !p.hasRequestedResource && 
             !p.isBlocked && 
             !completedProcesses.has(p.id)
         );
-
+        // selects a random process and sends a request
         if (availableProcesses.length > 0) {
-            // Select one process at a time to request the resource
             const randomIndex = Math.floor(Math.random() * availableProcesses.length);
             const selectedProcess = availableProcesses[randomIndex];
             
@@ -258,7 +272,6 @@ function updateProcessStates() {
         
         if (activeProcess.remainingTime <= 0) {
             completeProcess(activeProcess);
-            startNextProcess();
         }
     }
     
@@ -272,7 +285,6 @@ function updateProcessStates() {
     }
 }
 
-
 function startProcessExecution(processId) {
     const process = processQueue.find(p => p.id === processId);
     if (!process) return;
@@ -280,10 +292,9 @@ function startProcessExecution(processId) {
     if (activeProcess) {
         process.state = 'blocked';
         process.isBlocked = true;
-        process.inReadyQueue = false;
-        removeFromReadyQueue(process);
-        if (!blockedQueue.includes(process)) {
-            blockedQueue.push(process);
+        semaphore.removeFromReady(process);
+        if (!semaphore.q.includes(process)) {
+            semaphore.q.push(process);
         }
         const processDiv = document.getElementById(process.id);
         processDiv.style.backgroundColor = '#ff9999';
@@ -296,8 +307,7 @@ function startProcessExecution(processId) {
     process.hasResource = true;
     process.hasRequestedResource = false;
     process.isBlocked = false;
-    process.inReadyQueue = false;
-    removeFromReadyQueue(process);
+    semaphore.removeFromReady(process);
     
     const processDiv = document.getElementById(process.id);
     processDiv.style.backgroundColor = '#90EE90';
@@ -327,21 +337,21 @@ function updateBlockedQueueDisplay() {
     const queueContainer = document.querySelector('.queue-container');
     queueContainer.innerHTML = '';
     
-    if (blockedQueue.length === 0) {
+    const blockedProcesses = semaphore.getBlockedProcesses();
+    if (blockedProcesses.length === 0) {
         queueContainer.innerHTML = '<div style="color: #666; padding: 5px;">Empty</div>';
         return;
     }
 
-    blockedQueue.forEach((process, index) => {
+    blockedProcesses.forEach((process) => {
         const processElement = document.createElement('div');
         processElement.className = 'blocked-process';
-        processElement.innerHTML = `${process.id} (${process.remainingTime}s)`;
+        processElement.innerHTML = `${process.id}`;
         queueContainer.appendChild(processElement);
     });
 }
 
 function completeProcess(process) {
-    process.signal(); // Release the semaphore
     process.state = 'completed';
     process.hasResource = false;
     process.isBlocked = false;
@@ -353,33 +363,12 @@ function completeProcess(process) {
     
     activeProcess = null;
     
-    removeFromBlockedQueue(process);
-    removeFromReadyQueue(process);
+    semaphore.removeFromReady(process);
+    semaphore.V(); // this will add the process to the ready queue
     
-    updateBlockedQueueDisplay();
     updateReadyQueueDisplay();
 }
 
-function startNextProcess() {
-    if (!activeProcess) {
-        if (blockedQueue.length > 0) {
-            const nextProcess = blockedQueue.shift();
-            nextProcess.isBlocked = false;
-            nextProcess.state = 'ready';
-            readyQueue.push(nextProcess);
-            createGrantBall(nextProcess.id);
-        } else {
-            const waitingProcess = readyQueue.find(p => 
-                !p.hasResource && 
-                !p.isBlocked && 
-                !completedProcesses.has(p.id)
-            );
-            if (waitingProcess) {
-                createGrantBall(waitingProcess.id);
-            }
-        }
-    }
-}
 
 function updateProcessPositions() {
     const processes = document.querySelectorAll('.process');
@@ -449,31 +438,52 @@ function drawLines() {
     });
 }
 
-function endVisualization() {
-    pauseVisualization();
-    alert('All processes completed!');
+function resetVisualization() {
+    // Stop any running animation
+    clearInterval(animationInterval);
+    
+    // Reset global variables
+    processCount = 0;
     currentTime = 0;
-    completedProcesses.clear();
-    processQueue.forEach(process => {
-        process.remainingTime = process.executionTime;
-        process.state = 'waiting';
-        process.hasRequestedResource = false;
-        process.hasResource = false;
-        process.isBlocked = false;
-    });
-    blockedQueue = [];
-    updateBlockedQueueDisplay(); // Add this line
+    isRunning = false;
+    activeProcess = null;
     processesRequestingResource.clear();
+    completedProcesses.clear();
+    
+    // Reset semaphore
+    semaphore.reset();
+    
+    // Remove all process elements from the DOM
+    const container = document.querySelector('.container');
+    const processes = container.querySelectorAll('.process');
+    processes.forEach(process => process.remove());
+    
+    // Remove any request or grant balls
+    const balls = container.querySelectorAll('.request-ball, .grant-ball');
+    balls.forEach(ball => ball.remove());
+    
+    // Reset process queue
+    processQueue = [];
+    
+    // Reset visual elements
     updateTimer();
     updateProcessInfo();
+    updateBlockedQueueDisplay();
+    updateReadyQueueDisplay();
+    drawLines();
+    
+    // Re-enable start button and disable pause
+    document.querySelector('button[onclick="startVisualization()"]').disabled = false;
+    document.getElementById('pauseButton').disabled = true;
 }
 
-// Add this to your window.onload function
-window.onload = () => {
-    updateTimer();
-    document.getElementById('processInfo').innerHTML = 
-        '<h3>Process Information:</h3><p>No processes added yet</p>';
-    updateBlockedQueueDisplay(); // Add this line
-};
 
-window.onresize = updateProcessPositions;
+document.addEventListener('DOMContentLoaded', () => {
+    updateTimer();
+    // document.getElementById('processInfo').innerHTML = 
+        // '<h3>Process Information:</h3><p>No processes added yet</p>';
+    updateBlockedQueueDisplay();
+    updateReadyQueueDisplay();
+});
+
+window.addEventListener('resize', updateProcessPositions);

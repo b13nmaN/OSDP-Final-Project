@@ -73,12 +73,18 @@ button {
     z-index: 2;
 }
 
-.timer-display {
+
+.semaphoreTimerContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
     position: absolute;
     top: 10px;
     right: 10px;
     font-size: 20px;
     font-family: monospace;
+
 }
 
 .process-info {
@@ -89,17 +95,6 @@ button {
     padding: 10px;
     border-radius: 5px;
     max-width: 200px;
-}
-
-#blockedQueueDisplay {
-    position: fixed;
-    left: 20px;
-    top: 20px;
-    background-color: #f5f5f5;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 1000;
 }
 
 .queue-container {
@@ -122,20 +117,33 @@ button {
     align-items: center;
     justify-content: center;
     min-width: 40px;
-    animation: fadeIn 0.3s ease-in;
+    /* animation: fadeIn 0.3s ease-in; */
+    transition: all 0.3s ease-in-out;
 }
 
 .queues-container {
+    position: fixed;
+    left: 20px;
+    top: 20px;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     flex-direction: column;
     margin: 20px 0;
 }
 
 #readyQueueDisplay{
-    position: fixed;
-    left: 20px;
-    top: 250px;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+#blockedQueueDisplay {
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
 }
 
 #readyQueueDisplay, #blockedQueueDisplay {
@@ -158,6 +166,8 @@ button {
     padding: 5px;
     border-radius: 3px;
     border: 1px solid #81c784;
+    color: #81c784;
+    transition: all 0.3s ease-in-out;
 }
 
 @keyframes fadeIn {
