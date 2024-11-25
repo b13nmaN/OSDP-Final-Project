@@ -211,7 +211,6 @@ function startVisualization() {
     animationInterval = setInterval(() => {
         if (isRunning) {
             currentTime++;
-            updateTimer();
             updateProcessStates();
         }
     }, 1000);
@@ -224,9 +223,6 @@ function pauseVisualization() {
     clearInterval(animationInterval);
 }
 
-function updateTimer() {
-    document.getElementById('timer').textContent = `Time: ${currentTime}s`;
-}
 
 function updateProcessStates() {
     if (!activeProcess) {
@@ -577,7 +573,6 @@ function resetVisualization() {
  
     
     // Reset visual elements
-    updateTimer();
     updateProcessInfo();
     updateBlockedQueueDisplay();
     updateReadyQueueDisplay();
@@ -590,9 +585,6 @@ function resetVisualization() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateTimer();
-    // document.getElementById('processInfo').innerHTML = 
-        // '<h3>Process Information:</h3><p>No processes added yet</p>';
     updateBlockedQueueDisplay();
     updateReadyQueueDisplay();
 });
