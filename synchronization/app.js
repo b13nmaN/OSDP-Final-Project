@@ -102,25 +102,6 @@ class Process {
     }
 }
 
-function updateReadyQueueDisplay() {
-    const readyQueueContainer = document.querySelector('.ready-queue-container');
-    if (!readyQueueContainer) return;
-    
-    readyQueueContainer.innerHTML = '<h3>Ready Queue:</h3>';
-    
-    const readyProcesses = semaphore.getReadyProcesses();
-    if (readyProcesses.length === 0) {
-        readyQueueContainer.innerHTML += '<div style="color: #666; padding: 5px;">Empty</div>';
-        return;
-    }
-
-    readyProcesses.forEach((process) => {
-        const processElement = document.createElement('div');
-        processElement.className = 'ready-process';
-        processElement.innerHTML = `${process.id} (${process.remainingTime}s)`;
-        readyQueueContainer.appendChild(processElement);
-    });
-}
 
 function addProcess() {
     if (!isRunning) {
@@ -333,6 +314,26 @@ function updateProcessInfo() {
     info.innerHTML = html;
 }
 
+function updateReadyQueueDisplay() {
+    const readyQueueContainer = document.querySelector('.ready-queue-container');
+    if (!readyQueueContainer) return;
+    
+    readyQueueContainer.innerHTML = '<h3>Ready Queue:</h3>';
+    
+    const readyProcesses = semaphore.getReadyProcesses();
+    if (readyProcesses.length === 0) {
+        readyQueueContainer.innerHTML += '<div style="color: #666; padding: 5px;">Empty</div>';
+        return;
+    }
+
+    readyProcesses.forEach((process) => {
+        const processElement = document.createElement('div');
+        processElement.className = 'ready-process';
+        processElement.innerHTML = `${process.id} (${process.remainingTime}s)`;
+        readyQueueContainer.appendChild(processElement);
+    });
+}
+
 function updateBlockedQueueDisplay() {
     const queueContainer = document.querySelector('.queue-container');
     queueContainer.innerHTML = '';
@@ -365,6 +366,9 @@ function completeProcess(process) {
     
     semaphore.removeFromReady(process);
     semaphore.V(); // this will add the process to the ready queue
+    
+    // Add race condition explanation
+    updateRaceConditionDescription(`${process.id} has completed its execution and released the resource.`);
     
     updateReadyQueueDisplay();
 }
@@ -438,6 +442,106 @@ function drawLines() {
     });
 }
 
+function startRaceCondition() {
+    // Clear previous description
+    const descriptionElement = document.getElementById('raceConditionDescription');
+    if (descriptionElement) {
+        descriptionElement.innerHTML = '';
+    }
+
+    // Explain the race condition setup
+    updateRaceConditionDescription('Setting up a race condition scenario with two processes attempting to access a shared resource.');
+    updateRaceConditionDescription('Both processes will try to request the resource simultaneously.');
+
+    // Reset the visualization first
+    resetVisualization();
+
+    // Create two processes
+    addProcess(); // This will create P1
+    addProcess(); // This will create P2
+
+    // Modify the processes to simulate race condition
+    const processes = processQueue;
+    if (processes.length >= 2) {
+        const process1 = processes[0];
+        const process2 = processes[1];
+
+        // Override the sendRequest method to immediately create request balls
+        process1.sendRequest = () => {
+            if (!process1.hasRequestedResource && !process1.hasResource && !process1.isBlocked) {
+                process1.hasRequestedResource = true;
+                process1.state = 'waiting';
+                createRequestBall(process1.id);
+                
+                // Add explanation
+                updateRaceConditionDescription(`${process1.id} is attempting to request the shared resource.`);
+            }
+        };
+
+        process2.sendRequest = () => {
+            if (!process2.hasRequestedResource && !process2.hasResource && !process2.isBlocked) {
+                process2.hasRequestedResource = true;
+                process2.state = 'waiting';
+                createRequestBall(process2.id);
+                
+                // Add explanation
+                updateRaceConditionDescription(`${process2.id} is attempting to request the shared resource.`);
+            }
+        };
+
+        // Immediately send requests for both processes
+        setTimeout(() => {
+            process1.sendRequest();
+            process2.sendRequest();
+            
+            // Add overall explanation
+            updateRaceConditionDescription('Race condition initiated: Both processes are competing to access the shared resource simultaneously.');
+        }, 500);
+
+        // Start the visualization
+        startVisualization();
+    }
+}
+function updateRaceConditionDescription(message) {
+    const descriptionElement = document.getElementById('raceConditionDescription');
+    descriptionElement.style.display = 'block';
+    if (descriptionElement) {
+        descriptionElement.innerHTML += `<p>${message}</p>`;
+        
+        // Scroll to the bottom of the description element
+        descriptionElement.scrollTop = descriptionElement.scrollHeight;
+    }
+}
+
+// Modify the handleRequestArrival function to show race condition details
+function handleRequestArrival(processId) {
+    const requestBall = document.getElementById(`request-${processId}`);
+    if (requestBall) {
+        requestBall.remove();
+    }
+
+    const process = processQueue.find(p => p.id === processId);
+    if (process) {
+        if (semaphore.P(process)) {
+            // If the semaphore is free, grant immediately
+            createGrantBall(processId);
+            updateRaceConditionDescription(`${processId} successfully acquired the resource.`);
+        } else {
+            // If semaphore is already taken, block the process
+            const processDiv = document.getElementById(process.id);
+            processDiv.style.backgroundColor = '#ff9999';
+            processDiv.innerHTML = `${process.id} (blocked)`;
+            
+            // Add detailed race condition explanation
+            updateRaceConditionDescription(`Race Condition: ${processId} is blocked because the resource is already in use.`);
+            updateRaceConditionDescription('This demonstrates how processes compete for a shared resource, leading to potential waiting or blocking.');
+        }
+        updateProcessInfo();
+        updateReadyQueueDisplay();
+    }
+}
+
+
 function resetVisualization() {
     // Stop any running animation
     clearInterval(animationInterval);
@@ -464,6 +568,13 @@ function resetVisualization() {
     
     // Reset process queue
     processQueue = [];
+
+     // Clear race condition description
+     const descriptionElement = document.getElementById('raceConditionDescription');
+     if (descriptionElement) {
+         descriptionElement.innerHTML = '';
+     }
+ 
     
     // Reset visual elements
     updateTimer();
