@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSViz</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
+            background-color: #121a21;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Header styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            border-bottom: 1px solid #253746;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-container svg {
+            width: 30px;
+            height: 30px;
+            color: white;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .settings-btn {
+            background-color: #253746;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Content styles */
+        .content-container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px 40px;
+        }
+
+        .hero-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 20px 0;
+        }
+
+        .hero-text h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .hero-text p {
+            color: #95b0c6;
+            font-size: 0.875rem;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        .feature-card {
+            background-color: #1b2732;
+            border: 1px solid #364f63;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .feature-card svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .feature-card h2 {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #95b0c6;
+            font-size: 0.875rem;
+        }
+
+        /* Add this to your existing CSS */
+        .feature-card-link {
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card-link:hover .feature-card {
+            background-color: #253746;
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .feature-card-link:hover svg {
+            color: #4a9fff;
+        }
+
+        .feature-card-link:hover h2 {
+            color: #4a9fff;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- SVG path from original code -->
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor"></path>
+            </svg>
+            <h2>OSViz</h2>
+        </div>
+        <div class="nav-container">
+            <div class="nav-links">
+                <a href="#">Overview</a>
+                <a href="#">Demos</a>
+                <a href="#">Docs</a>
+            </div>
+            <button class="settings-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <!-- SVG path for gear icon -->
+                    <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path>
+                </svg>
+            </button>
+            <div class="profile-pic" style="background-image: url('https://cdn.usegalileo.ai/sdxl10/5245e422-a076-4fa8-b754-8e9cc9557d73.png');"></div>
+        </div>
+    </header>
+    <div class="content-container">
+        <div class="hero-section">
+            <div class="hero-text">
+                <h1>Explore operating systems concepts with interactive demos</h1>
+                <p>OSViz is a collection of interactive visualizations designed to help you understand the inner workings of an operating system. Dive into our demos to learn how different OS components work, or check out our overview to see how everything fits together.</p>
+            </div>
+        </div>
+    
+        <!-- <div class="feature-grid"> -->
+            <div class="feature-category">
+                <h2>Synchronization Concepts and Algorithms</h2>
+                <div class="feature-grid">
+                    <a href="semaphore.html" class="feature-card-link">
+                        <div class="feature-card">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M216,48H40A16,16,0,0,0,24,64V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V64A16,16,0,0,0,216,48ZM200,64V80H56V64ZM56,192V96H200v96Z"></path>
+                                <path d="M112,128a8,8,0,0,1,8-8h24a8,8,0,0,1,0,16H120A8,8,0,0,1,112,128Zm72,0a8,8,0,0,1,8-8h16a8,8,0,0,1,0,16H192A8,8,0,0,1,184,128Z"></path>
+                            </svg>
+                            <div>
+                                <h3>Semaphores</h3>
+                                <p>Explore the implementation and usage of semaphores for synchronization</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+    
+            <div class="feature-category">
+                <h2>Classic Synchronization Problems</h2>
+                <div class="feature-grid">
+                    <a href="producer_consumer.html" class="feature-card-link">
+                        <div class="feature-card">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm36-60a8,8,0,0,1-8,8h-8v16a8,8,0,0,1-16,0V164H92a8,8,0,0,1,0-16h40V124H92a8,8,0,0,1,0-16h36V92a8,8,0,0,1,16,0v16h8A8,8,0,0,1,164,116Z"></path>
+                            </svg>
+                            <div>
+                                <h3>Consumer-Producer Problem</h3>
+                                <p>Visualize the synchronization challenges in the consumer-producer problem</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="synchronization/readers-writers.html" class="feature-card-link">
+                        <div class="feature-card">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M216,56V96a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H208A8,8,0,0,1,216,56Zm-8,64H48a8,8,0,0,0-8,8v40a8,8,0,0,0,8,8H208a8,8,0,0,0,8-8V128A8,8,0,0,0,208,120Zm0,72H48a8,8,0,0,0-8,8v24a8,8,0,0,0,8,8H208a8,8,0,0,0,8-8V200A8,8,0,0,0,208,192Z"></path>
+                            </svg>
+                            <div>
+                                <h3>Readers-Writers Problem</h3>
+                                <p>Explore the synchronization requirements of the readers-writers problem</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        <!-- </div> -->
+    </div>
+</body>
+</html>
