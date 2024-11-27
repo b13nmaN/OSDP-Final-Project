@@ -1,35 +1,187 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f9;
+  font-family: system-ui, -apple-system, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f0f0f0;
+}
+
+.container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.process-states {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+  position: relative;
+}
+
+.state {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #333;
+  background: #fff;
+  text-align: center;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.state.active {
+  background: #4caf50;
+  color: white;
+  transform: scale(1.1);
+}
+
+.mode-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  gap: 20px;
+}
+
+.mode {
+  flex: 1;
+  padding: 20px;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.user-mode {
+  background: #e3f2fd;
+  border: 2px solid #2196f3;
+}
+
+.kernel-mode {
+  background: #ffebee;
+  border: 2px solid #f44336;
+}
+
+.mode.active {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.process {
+  padding: 10px;
+  margin: 10px 0;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  position: relative;
+}
+
+.process:hover {
+  background: #f5f5f5;
+}
+
+.process.selected {
+  border: 2px solid #4caf50;
+}
+
+.operation-menu {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+}
+
+.process.selected .operation-menu {
+  display: block;
+}
+
+.controls {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background: #2196f3;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #1976d2;
+}
+
+.context-switch {
+  padding: 20px;
+  margin: 20px 0;
+  background: #fff3e0;
+  border-radius: 8px;
+  border: 2px solid #ff9800;
+}
+
+#processInfo {
+  margin-top: 20px;
+  padding: 10px;
+  background: #e8f5e9;
+  border-radius: 4px;
+}
+
+.kernel-operation {
+  padding: 10px;
+  margin: 5px 0;
+  background: #ffebee;
+  border-radius: 4px;
+  display: none;
+}
+
+.kernel-operation.active {
+  display: block;
+  animation: pulse 1s infinite;
+}
+
+.operation-button {
+  padding: 5px 10px;
+  margin: 2px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.operation-button:hover {
+  background: #f0f0f0;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
   }
-  
-  h1 {
-    margin: 20px;
+  50% {
+    opacity: 0.6;
   }
-  
-  #controls {
-    margin: 10px 0;
+  100% {
+    opacity: 1;
   }
-  
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 5px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-  
-  canvas {
-    border: 1px solid #ccc;
-    margin-top: 20px;
-  }
-  
+}
+
+.operation-description {
+  margin-top: 20px;
+  padding: 15px;
+  background: #e8f5e9;
+  border-radius: 4px;
+  display: none;
+}
+
+.operation-description.active {
+  display: block;
+}

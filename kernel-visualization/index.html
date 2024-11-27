@@ -1,18 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kernel Process Handling Visualization</title>
     <link rel="stylesheet" href="style.css" />
+    <title>Kernel Process Handling System</title>
   </head>
   <body>
-    <h1>Kernel Process Handling Visualization</h1>
-    <div id="controls">
-      <button id="startBtn">Start</button>
-      <button id="stopBtn" disabled>Stop</button>
+    <div class="container">
+      <h1>Kernel Process Handling System</h1>
+
+      <div class="controls">
+        <button onclick="startSimulation()">Start New Process</button>
+        <button onclick="triggerContextSwitch()">Force Context Switch</button>
+      </div>
+
+      <div class="process-states">
+        <div class="state" id="ready">Ready</div>
+        <div class="state" id="running">Running</div>
+        <div class="state" id="waiting">Waiting</div>
+        <div class="state" id="terminated">Terminated</div>
+      </div>
+
+      <div class="mode-container">
+        <div class="mode user-mode" id="userMode">
+          <h2>User Mode</h2>
+          <div id="processList"></div>
+        </div>
+        <div class="mode kernel-mode" id="kernelMode">
+          <h2>Kernel Mode</h2>
+          <div class="kernel-operation" id="fileOperation">
+            File System Operation
+            <div class="progress-bar"></div>
+          </div>
+          <div class="kernel-operation" id="memoryOperation">
+            Memory Management
+            <div class="progress-bar"></div>
+          </div>
+          <div class="kernel-operation" id="networkOperation">
+            Network Communication
+            <div class="progress-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="operation-description" id="fileOpDescription">
+        <h3>File System Operation</h3>
+        <p>
+          When a process needs to read or write files, it must request the
+          kernel's help. The kernel:
+        </p>
+        <ol>
+          <li>Checks file permissions</li>
+          <li>Manages file system cache</li>
+          <li>Handles actual disk I/O</li>
+        </ol>
+      </div>
+
+      <div class="operation-description" id="memoryOpDescription">
+        <h3>Memory Management</h3>
+        <p>When a process needs more memory, the kernel:</p>
+        <ol>
+          <li>Checks available memory</li>
+          <li>Allocates new memory pages</li>
+          <li>Updates page tables</li>
+        </ol>
+      </div>
+
+      <div class="operation-description" id="networkOpDescription">
+        <h3>Network Communication</h3>
+        <p>
+          When a process needs to send/receive data over network, the kernel:
+        </p>
+        <ol>
+          <li>Manages network protocols</li>
+          <li>Handles packet routing</li>
+          <li>Controls network interfaces</li>
+        </ol>
+      </div>
+
+      <div class="context-switch" id="contextSwitch">
+        <h3>Context Switch Information</h3>
+        <p>Current Process: <span id="currentProcess">None</span></p>
+        <p>Mode: <span id="currentMode">User</span></p>
+        <p>Operation: <span id="currentOperation">None</span></p>
+      </div>
+
+      <div id="processInfo"></div>
     </div>
-    <canvas id="visualizationCanvas" width="900" height="600"></canvas>
+
     <script src="script.js"></script>
   </body>
 </html>
