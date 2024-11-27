@@ -1,0 +1,217 @@
+
+/* Original styles */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+    position: relative;
+    height: 600px;
+    background-color: #1b2732;
+    border: 1px solid #364f63;
+    color: white;
+}
+.algorithm {
+    margin-bottom: 30px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.algorithm-header {
+    background: #253746;
+    padding: 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.simulation-area {
+    padding: 20px;
+    display: none;
+    background: #1b2732;
+}
+.active .simulation-area {
+    display: block;
+}
+
+/* Added styles from semaphore visualization */
+.process {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #4a9fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #253746;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.visualization {
+position: relative;
+height: 400px;
+width: 100%;
+margin: 20px 0;
+overflow: hidden;
+}
+
+.critical-section {
+position: absolute;
+width: 120px;
+height: 60px;
+border: 2px solid #ffb74d;
+display: flex;
+align-items: center;
+justify-content: center;
+background-color: #253746;
+color: #ffffff;
+left: 50%;
+top: 50%;
+transform: translate(-50%, -50%);
+border-radius: 10px;
+z-index: 1;
+}
+.request-ball, .grant-ball {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.request-ball {
+    background-color: #ff4444;
+}
+
+.grant-ball {
+    background-color: #44ff44;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.stats {
+    margin-top: 20px;
+    padding: 10px;
+    background: #253746;
+    border-radius: 4px;
+    color: white;
+}
+
+.btn {
+    padding: 8px 16px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #4a9fff;
+    color: white;
+}
+
+.btn:hover {
+    background: #3a7fd0;
+}
+
+.code-section {
+    background: #253746;
+    padding: 20px;
+    border-radius: 4px;
+    margin-top: 15px;
+    color: #e0e0e0;
+    counter-reset: line;
+    font-family: 'Courier New', monospace;
+    line-height: 1.5;
+    position: relative;
+}
+
+.code-section pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.code-line {
+    display: block;
+    position: relative;
+    padding-left: 3.5em;
+    padding-right: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.code-line:before {
+    content: counter(line);
+    counter-increment: line;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2.5em;
+    text-align: right;
+    color: #666;
+    padding-right: 0.5em;
+    border-right: 1px solid #444;
+}
+
+.code-line.highlighted {
+    background-color: #ff7b00;
+    color: white;
+}
+
+.explanation-area {
+background: #253746;
+border: 1px solid #364f63;
+border-radius: 4px;
+padding: 15px;
+margin: 15px 0;
+max-height: 200px;
+overflow-y: auto;
+color: #e0e0e0;
+font-family: system-ui, -apple-system, sans-serif;
+}
+
+.explanation-area .step {
+margin: 5px 0;
+padding: 8px;
+border-left: 3px solid #4a9fff;
+animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.explanation-area::-webkit-scrollbar {
+width: 8px;
+}
+
+.explanation-area::-webkit-scrollbar-track {
+background: #1b2732;
+border-radius: 4px;
+}
+
+.explanation-area::-webkit-scrollbar-thumb {
+background: #4a9fff;
+border-radius: 4px;
+}
+
+/* Update visualization spacing */
+.visualization {
+margin-bottom: 0;
+}
+
+
+body {
+    background-color: #121a21;
+    color: white;
+}

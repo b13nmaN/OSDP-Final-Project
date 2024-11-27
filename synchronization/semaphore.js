@@ -102,7 +102,6 @@ class Process {
     }
 }
 
-
 function addProcess() {
     if (!isRunning) {
         processCount++;
@@ -190,7 +189,7 @@ function handleRequestArrival(processId) {
             createGrantBall(processId);
         } else {
             const processDiv = document.getElementById(process.id);
-            processDiv.style.backgroundColor = '#ff9999';
+            processDiv.style.backgroundColor = 'white';
             processDiv.innerHTML = `${process.id} (blocked)`;
         }
         updateProcessInfo();
@@ -274,7 +273,8 @@ function startProcessExecution(processId) {
             semaphore.q.push(process);
         }
         const processDiv = document.getElementById(process.id);
-        processDiv.style.backgroundColor = '#ff9999';
+        processDiv.style.backgroundColor = 'rgba(150, 33, 33, 0.3)'; // More transparent dark red
+        processDiv.style.color = '#ff6b6b'; // Lighter text for better readability
         processDiv.innerHTML = `${process.id} (blocked)`;
         return;
     }
@@ -287,7 +287,8 @@ function startProcessExecution(processId) {
     semaphore.removeFromReady(process);
     
     const processDiv = document.getElementById(process.id);
-    processDiv.style.backgroundColor = '#90EE90';
+    processDiv.style.backgroundColor = 'rgba(72, 176, 89, 0.3)'; // More transparent green
+    processDiv.style.color = '#4ade80'; // Lighter green text
     processDiv.innerHTML = `${process.id} (using resource)`;
     
     updateBlockedQueueDisplay();
@@ -298,6 +299,7 @@ function startProcessExecution(processId) {
 
 function updateProcessInfo() {
     const info = document.getElementById('processInfo');
+    info.style.display = 'block';
     let html = '<h3>Process Information:</h3>';
     processQueue.forEach(process => {
         html += `
@@ -355,7 +357,8 @@ function completeProcess(process) {
     completedProcesses.add(process.id);
     
     const processDiv = document.getElementById(process.id);
-    processDiv.style.backgroundColor = '#fff';
+    processDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'; // More transparent white
+    processDiv.style.color = '#ffffff';
     processDiv.innerHTML = process.id;
     
     activeProcess = null;
@@ -420,22 +423,23 @@ function drawLines() {
             );
             
             if (processObj.hasRequestedResource) {
-                ctx.strokeStyle = '#ff9999';
+                ctx.strokeStyle = 'white';
                 ctx.lineWidth = 2;
             } else if (processObj.state === 'running') {
-                ctx.strokeStyle = 'green';
+                ctx.strokeStyle = '#44ff44';
                 ctx.lineWidth = 3;
             } else if (processObj.state === 'completed') {
-                ctx.strokeStyle = '#ddd';
+                ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 1;
             } else {
-                ctx.strokeStyle = 'black';
+                ctx.strokeStyle = 'white';
                 ctx.lineWidth = 1;
             }
             
             ctx.stroke();
         }
     });
+
 }
 
 function startRaceCondition() {
@@ -525,7 +529,7 @@ function handleRequestArrival(processId) {
         } else {
             // If semaphore is already taken, block the process
             const processDiv = document.getElementById(process.id);
-            processDiv.style.backgroundColor = '#ff9999';
+            processDiv.style.backgroundColor = 'rgba(150, 33, 33, 0.3)'; // this is should be dark red
             processDiv.innerHTML = `${process.id} (blocked)`;
             
             // Add detailed race condition explanation
@@ -570,9 +574,11 @@ function resetVisualization() {
      if (descriptionElement) {
          descriptionElement.innerHTML = '';
      }
- 
+     
     
     // Reset visual elements
+    document.querySelector('#processInfo').style.display = 'none';
+    document.querySelector('#raceConditionDescription').style.display = 'none';
     updateProcessInfo();
     updateBlockedQueueDisplay();
     updateReadyQueueDisplay();

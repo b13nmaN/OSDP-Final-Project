@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Process Scheduling</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Process Scheduling Visualization</h2>
+        
+        <div class="controls">
+            <select name="algorithm" id="algorithm" title="Choose a scheduling algorithm">
+                <option value="fcfs">First Come First Serve (FCFS)</option>
+                <option value="sjf">Shortest Job First (SJF)</option>
+                <option value="rr">Round Robin</option>
+                <option value="priority">Priority Scheduling</option>
+            </select>
+            <button onclick="addProcess()">Add Process</button>
+            <button onclick="startSimulation()">Start Simulation</button>
+            <button onclick="resetSimulation()">Reset</button>
+            <input type="number" id="timeQuantum" placeholder="Time Quantum (for RR)" min="1" value="2">
+        </div>
+
+        <div class="process-list" id="processList">
+            <table id="processTable">
+                <thead>
+                    <tr>
+                        <th>Process ID</th>
+                        <th>Arrival Time</th>
+                        <th>Burst Time</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody id="processTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="gantt-chart" id="ganttChart"></div>
+        <div class="stats" id="stats"></div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

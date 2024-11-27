@@ -1,0 +1,201 @@
+body {
+    background-color: #121a21;
+    color: white;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.container {
+    margin: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #121a21;
+    color: white;
+}
+
+.process {
+    height: 40px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    background-color: #1b2732;
+    border: 1px solid #364f63;
+}
+
+.gantt-chart {
+    display: flex;
+    margin: 20px 0;
+    overflow-x: auto;
+    background-color: #1b2732;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.gantt-block {
+    min-width: 50px;
+    height: 40px;
+    border: 1px solid #253746;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: #1b2732;
+    color: #041f34e0;
+}
+
+.time-marker {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    color: #95b0c6;
+}
+
+.stats {
+    margin: 20px 0;
+    padding: 10px;
+    background: #1b2732;
+    border-radius: 5px;
+    border: 1px solid #253746;
+}
+
+.process-input {
+    margin: 10px 0;
+    padding: 10px;
+    background: #1b2732;
+    border: 1px solid #253746;
+    border-radius: 5px;
+    color: white;
+}
+
+.controls {
+    margin: 20px 0;
+}
+
+button {
+    padding: 8px 16px;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: #253746;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #4a9fff;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 10px 0;
+    background-color: #1b2732;
+}
+
+th, td {
+    border: 1px solid #253746;
+    padding: 8px;
+    text-align: left;
+    color: #95b0c6;
+}
+
+.process-list {
+    margin: 20px 0;
+    background-color: #1b2732;
+    border-radius: 5px;
+    padding: 15px;
+    border: 1px solid #253746;
+}
+
+input, select, textarea {
+    background-color: #1b2732;
+    border: 1px solid #253746;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #4a9fff;
+    outline: none;
+}
+
+/* Add these additional CSS rules */
+.visualization {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    margin: 20px 0;
+    overflow: hidden;
+    border: 1px solid #364f63;
+    border-radius: 8px;
+    background-color: #1b2732;
+}
+
+#peterson-vis, #dekker-vis {
+    width: 100%;
+    margin: 20px 0;
+}
+
+.process {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #4a9fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #253746;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.critical-section {
+    position: absolute;
+    width: 120px;
+    height: 60px;
+    border: 2px solid #ffb74d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #253746;
+    color: #ffffff;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    z-index: 1;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.request-ball, .grant-ball {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 3;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.request-ball {
+    background-color: #ff4444;
+}
+
+.grant-ball {
+    background-color: #44ff44;
+}

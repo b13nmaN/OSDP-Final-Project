@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Mutual Exclusion Algorithm</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="mutual-exclusion.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Mutual Exclusion Algorithm Comparison</h1>
+        
+        <!-- Peterson's Algorithm -->
+        <div class="algorithm" id="peterson">
+            <div class="algorithm-header">
+                <h2>Peterson's Algorithm</h2>
+                <span class="expand-btn">+</span>
+            </div>
+            <!-- For Peterson's Algorithm -->
+<div class="simulation-area">
+    <div class="simulation-controls">
+        <button class="btn" onclick="startPeterson()">Start Simulation</button>
+        <button class="btn" onclick="resetPeterson()">Reset</button>
+        <button class="btn" onclick="addProcess('peterson')">Add Process</button>
+    </div>
+    <div id="peterson-vis">
+        <div class="visualization">
+            <canvas id="peterson-lines"></canvas>
+            <div class="critical-section" id="cs1">Critical Section</div>
+        </div>
+    </div>
+    <!-- Add explanation area right after visualization -->
+    <div class="explanation-area" id="peterson-explanation">
+        <!-- Explanations will be added here dynamically -->
+    </div>
+    <div class="stats" id="peterson-stats">
+        <h3>Statistics</h3>
+        <p>Attempts: <span id="peterson-attempts">0</span></p>
+        <p>Conflicts Resolved: <span id="peterson-conflicts">0</span></p>
+    </div>
+    <div class="code-section">
+
+                    <div class="code-line">// Real-world implementation in C</div>
+                    <div class="code-line">volatile int flag[2] = {0, 0};</div>
+                    <div class="code-line">volatile int turn = 0;</div>
+                    <div class="code-line"></div>
+                    <div class="code-line">void process0() {</div>
+                    <div class="code-line">    flag[0] = 1;</div>
+                    <div class="code-line">    turn = 1;</div>
+                    <div class="code-line">    while (flag[1] && turn == 1);</div>
+                    <div class="code-line">    // Critical Section</div>
+                    <div class="code-line">    flag[0] = 0;</div>
+                    <div class="code-line">}</div>
+                    <div class="code-line"></div>
+                    <div class="code-line">void process1() {</div>
+                    <div class="code-line">    flag[1] = 1;</div>
+                    <div class="code-line">    turn = 0;</div>
+                    <div class="code-line">    while (flag[0] && turn == 0);</div>
+                    <div class="code-line">    // Critical Section</div>
+                    <div class="code-line">    flag[1] = 0;</div>
+                    <div class="code-line">}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dekker's Algorithm -->
+        <div class="algorithm" id="dekker">
+            <div class="algorithm-header">
+                <h2>Dekker's Algorithm</h2>
+                <span class="expand-btn">+</span>
+            </div>
+            <div class="simulation-area">
+                <div class="simulation-controls">
+                    <button class="btn" onclick="startDekker()">Start Simulation</button>
+                    <button class="btn" onclick="resetDekker()">Reset</button>
+                    <button class="btn" onclick="addProcess('dekker')">Add Process</button>
+                </div>
+                <div id="dekker-vis">
+                    <div class="visualization">
+                        <canvas id="dekker-lines"></canvas>
+                        <div class="critical-section" id="cs2">Critical Section</div>
+                    </div>
+                </div>
+                <!-- Add explanation area right after visualization -->
+                <div class="explanation-area" id="dekker-explanation">
+                    <!-- Explanations will be added here dynamically -->
+                </div>
+                <div class="stats" id="dekker-stats">
+                    <h3>Statistics</h3>
+                    <p>Attempts: <span id="dekker-attempts">0</span></p>
+                    <p>Conflicts Resolved: <span id="dekker-conflicts">0</span></p>
+                </div>
+                <div class="code-section">
+            
+                    <div class="code-line">// Real-world implementation in C</div>
+                    <div class="code-line">volatile int flag[2] = {0, 0};</div>
+                    <div class="code-line">volatile int turn = 0;</div>
+                    <div class="code-line"></div>
+                    <div class="code-line">void process0() {</div>
+                    <div class="code-line">    flag[0] = 1;</div>
+                    <div class="code-line">    while (flag[1]) {</div>
+                    <div class="code-line">        if (turn != 0) {</div>
+                    <div class="code-line">            flag[0] = 0;</div>
+                    <div class="code-line">            while (turn != 0);</div>
+                    <div class="code-line">            flag[0] = 1;</div>
+                    <div class="code-line">        }</div>
+                    <div class="code-line">    }</div>
+                    <div class="code-line">    // Critical Section</div>
+                    <div class="code-line">    turn = 1;</div>
+                    <div class="code-line">    flag[0] = 0;</div>
+                    <div class="code-line">}</div>
+                    <div class="code-line"></div>
+                    <div class="code-line">void process1() {</div>
+                    <div class="code-line">    flag[1] = 1;</div>
+                    <div class="code-line">    while (flag[0]) {</div>
+                    <div class="code-line">        if (turn != 1) {</div>
+                    <div class="code-line">            flag[1] = 0;</div>
+                    <div class="code-line">            while (turn != 1);</div>
+                    <div class="code-line">            flag[1] = 1;</div>
+                    <div class="code-line">        }</div>
+                    <div class="code-line">    }</div>
+                    <div class="code-line">    // Critical Section</div>
+                    <div class="code-line">    turn = 0;</div>
+                    <div class="code-line">    flag[1] = 0;</div>
+                    <div class="code-line">}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="mutual-exclusion.js"></script>
+</body>
+</html>
